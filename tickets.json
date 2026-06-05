@@ -1,0 +1,122 @@
+[
+    {
+        "category": "account",
+        "urgency": "medium",
+        "summary": "Duplicate charge",
+        "sentiment": "neutral"
+    },
+    {
+        "category": "package issue",
+        "urgency": "high",
+        "summary": "Package not received",
+        "sentiment": "negative"
+    },
+    {
+        "category": "bug",
+        "urgency": "high",
+        "summary": "app crash on login",
+        "sentiment": "negative"
+    },
+    {
+        "category": "refund",
+        "urgency": "high",
+        "summary": "request for immediate refund",
+        "sentiment": "negative"
+    },
+    {
+        "category": "general inquiries",
+        "urgency": "low",
+        "summary": "Everything is working perfectly.",
+        "sentiment": "positive"
+    },
+    {
+        "category": "feedback",
+        "urgency": "low",
+        "summary": "Your service is amazing.",
+        "sentiment": "positive"
+    },
+    {
+        "category": "account",
+        "urgency": "high",
+        "summary": "account inaccessible",
+        "sentiment": "negative"
+    },
+    {
+        "category": "Technical Issue",
+        "urgency": "high",
+        "summary": "Slow Website",
+        "sentiment": "negative"
+    },
+    {
+        "category": "order issue",
+        "urgency": "high",
+        "summary": "damaged order",
+        "sentiment": "negative"
+    },
+    {
+        "category": "subscription",
+        "urgency": "medium",
+        "summary": "cancel subscription request",
+        "sentiment": "negative"
+    },
+    {
+        "category": "thank-you",
+        "urgency": "low",
+        "summary": "Thank you for the quick support.",
+        "sentiment": "positive"
+    },
+    {
+        "category": "bug",
+        "urgency": "high",
+        "summary": "Payment Page Issue",
+        "sentiment": "negative"
+    },
+    {
+        "category": "password",
+        "urgency": "high",
+        "summary": "forgot password",
+        "sentiment": "neutral"
+    },
+    {
+        "category": "support",
+        "urgency": "high",
+        "summary": "Delayed Shipment Issue",
+        "sentiment": "negative"
+    },
+    {
+        "category": "mobile app issue",
+        "urgency": "high",
+        "summary": "Mobile App Freezes",
+        "sentiment": "negative"
+    },
+    {
+        "category": "feedback",
+        "urgency": "low",
+        "summary": "Love the new update",
+        "sentiment": "positive"
+    },
+    {
+        "category": " billing issue",
+        "urgency": "high",
+        "summary": " incorrect billing ",
+        "sentiment": "negative"
+    },
+    {
+        "category": "General Inquiry",
+        "urgency": "medium",
+        "summary": "Nobody responded to my ticket.",
+        "sentiment": "negative"
+    },
+    {
+        "category": "product issue",
+        "urgency": "high",
+        "summary": "Product stopped working",
+        "sentiment": "negative"
+    },
+    {
+        "category": "General Feedback",
+        "urgency": "low",
+        "summary": "Great experience so far.",
+        "sentiment": "positive"
+    }
+]
