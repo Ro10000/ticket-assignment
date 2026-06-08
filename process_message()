@@ -1,0 +1,70 @@
+# Normalize urgency
+ticket["urgency"] = (
+    str(ticket.get("urgency", "low"))
+    .strip()
+    .lower()
+)
+
+# Normalize sentiment
+if ticket.get("sentiment") is None:
+    ticket["sentiment"] = "neutral"
+else:
+    ticket["sentiment"] = (
+        str(ticket.get("sentiment"))
+        .strip()
+        .lower()
+    )
+
+# Fix common model mistakes
+if ticket["urgency"] in [
+    "none",
+    "neutral",
+    "null",
+    ""
+]:
+    ticket["urgency"] = "low"
+
+# Missing category
+if ticket.get("category") is None:
+    ticket["category"] = "general"
+
+# Missing summary
+if (
+    ticket.get("summary") is None
+    or str(ticket.get("summary")).strip() == ""
+):
+    ticket["summary"] = "No summary provided"
+
+# Safe confidence values
+ticket["category_confidence"] = float(
+    ticket.get("category_confidence")
+    or 0.50
+)
+
+ticket["urgency_confidence"] = float(
+    ticket.get("urgency_confidence")
+    or 0.50
+)
+
+ticket["summary_confidence"] = float(
+    ticket.get("summary_confidence")
+    or 0.50
+)
+
+ticket["sentiment_confidence"] = float(
+    ticket.get("sentiment_confidence")
+    or 0.50
+)
+
+# Calculate average confidence
+average_confidence = (
+    ticket["category_confidence"]
+    + ticket["urgency_confidence"]
+    + ticket["summary_confidence"]
+    + ticket["sentiment_confidence"]
+) / 4
+
+# Human review flag
+ticket["human_review"] = (
+    average_confidence < 0.70
+)

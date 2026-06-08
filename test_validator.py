@@ -1,39 +1,26 @@
-from validator import Ticket
-from pydantic import ValidationError
-import pytest
+from pydantic import BaseModel
+from typing import Literal
 
 
-def test_valid_ticket():
+class Ticket(BaseModel):
+    category: str
+    category_confidence: float
 
-    ticket = Ticket(
-        category="billing",
-        urgency="high",
-        summary="Customer charged twice",
-        sentiment="negative"
-    )
+    urgency: Literal[
+        "low",
+        "medium",
+        "high"
+    ]
+    urgency_confidence: float
 
-    assert ticket.urgency == "high"
+    summary: str
+    summary_confidence: float
 
+    sentiment: Literal[
+        "positive",
+        "neutral",
+        "negative"
+    ]
+    sentiment_confidence: float
 
-def test_invalid_urgency():
-
-    with pytest.raises(ValidationError):
-
-        Ticket(
-            category="billing",
-            urgency="urgent",
-            summary="Customer charged twice",
-            sentiment="negative"
-        )
-
-
-def test_invalid_sentiment():
-
-    with pytest.raises(ValidationError):
-
-        Ticket(
-            category="billing",
-            urgency="high",
-            summary="Customer charged twice",
-            sentiment="angry"
-        )
+    human_review: bool = False

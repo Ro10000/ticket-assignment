@@ -8,6 +8,7 @@ MAX_RETRIES = 3
 
 
 def classify_message(message):
+
     prompt = f"""
 You are a customer support classifier.
 
@@ -15,14 +16,23 @@ Return ONLY a valid JSON object.
 
 DO NOT explain.
 DO NOT use markdown.
-DO NOT add any text before or after the JSON.
+DO NOT add any text before or after JSON.
+
+Provide confidence scores between 0 and 1.
 
 Schema:
 {{
     "category": "string",
+    "category_confidence": 0.95,
+
     "urgency": "low|medium|high",
+    "urgency_confidence": 0.95,
+
     "summary": "string",
-    "sentiment": "positive|neutral|negative"
+    "summary_confidence": 0.95,
+
+    "sentiment": "positive|neutral|negative",
+    "sentiment_confidence": 0.95
 }}
 
 Message:
@@ -43,10 +53,14 @@ Message:
 
 
 def process_message(message):
+
     for attempt in range(MAX_RETRIES):
 
         try:
-            result = classify_message(message)
+
+            result = classify_message(
+                message
+            )
 
             print("\nRAW RESPONSE:")
             print(result)
@@ -59,26 +73,38 @@ def process_message(message):
             )
 
             if not match:
-                raise ValueError("No JSON found")
+                raise ValueError(
+                    "No JSON found"
+                )
 
             json_text = match.group()
 
-            ticket = json.loads(json_text)
+            ticket = json.loads(
+                json_text
+            )
 
-            # Normalize values
             ticket["urgency"] = (
-                str(ticket.get("urgency", "low"))
+                str(
+                    ticket.get(
+                        "urgency",
+                        "low"
+                    )
+                )
                 .strip()
                 .lower()
             )
 
             ticket["sentiment"] = (
-                str(ticket.get("sentiment", "neutral"))
+                str(
+                    ticket.get(
+                        "sentiment",
+                        "neutral"
+                    )
+                )
                 .strip()
                 .lower()
             )
 
-            # Fix common model mistakes
             if ticket["urgency"] in [
                 "none",
                 "neutral",
@@ -87,15 +113,77 @@ def process_message(message):
             ]:
                 ticket["urgency"] = "low"
 
-            if ticket.get("category") is None:
-                ticket["category"] = "general"
+            if (
+                ticket.get("category")
+                is None
+            ):
+                ticket["category"] = (
+                    "general"
+                )
 
-            if ticket.get("summary") is None:
-                ticket["summary"] = "No summary provided"
+            if (
+                ticket.get("summary")
+                is None
+            ):
+                ticket["summary"] = (
+                    "No summary provided"
+                )
 
-            validated = Ticket(**ticket)
+            ticket.setdefault(
+                "category_confidence",
+                0.50
+            )
 
-            return validated.model_dump()
+            ticket.setdefault(
+                "urgency_confidence",
+                0.50
+            )
+
+            ticket.setdefault(
+                "summary_confidence",
+                0.50
+            )
+
+            ticket.setdefault(
+                "sentiment_confidence",
+                0.50
+            )
+
+            average_confidence = (
+                float(
+                    ticket[
+                        "category_confidence"
+                    ]
+                )
+                + float(
+                    ticket[
+                        "urgency_confidence"
+                    ]
+                )
+                + float(
+                    ticket[
+                        "summary_confidence"
+                    ]
+                )
+                + float(
+                    ticket[
+                        "sentiment_confidence"
+                    ]
+                )
+            ) / 4
+
+            ticket["human_review"] = (
+                average_confidence
+                < 0.70
+            )
+
+            validated = Ticket(
+                **ticket
+            )
+
+            return (
+                validated.model_dump()
+            )
 
         except (
             json.JSONDecodeError,
@@ -107,14 +195,25 @@ def process_message(message):
             print(
                 f"Retry {attempt + 1} for:"
             )
+
             print(message)
             print(error)
 
     return {
         "category": "unknown",
+        "category_confidence": 0.0,
+
         "urgency": "low",
-        "summary": "Could not classify message",
-        "sentiment": "neutral"
+        "urgency_confidence": 0.0,
+
+        "summary":
+            "Could not classify message",
+        "summary_confidence": 0.0,
+
+        "sentiment": "neutral",
+        "sentiment_confidence": 0.0,
+
+        "human_review": True
     }
 
 
@@ -155,6 +254,7 @@ def main():
     total_tokens = 0
 
     for message in messages:
+
         total_tokens += len(
             message.split()
         )
@@ -179,10 +279,22 @@ def main():
 
     save_results(tickets)
 
+    human_review_count = sum(
+        1
+        for ticket in tickets
+        if ticket[
+            "human_review"
+        ]
+    )
+
     print("\nDone!")
 
     print(
         f"Processed {len(tickets)} tickets."
+    )
+
+    print(
+        f"Human Review Needed: {human_review_count}"
     )
 
     print(
